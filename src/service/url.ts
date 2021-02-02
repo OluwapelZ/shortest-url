@@ -9,11 +9,12 @@ export class UrlService {
     ) {}
 
     public encode(url: string): string {
-
+        this.logger.info(`Successfully encoded url`);
         return;
     }
 
     public decode(url: string): string {
+        this.logger.info(`Successfully decoded url`)
         return ;
     }
 }

@@ -1,10 +1,9 @@
 import 'reflect-metadata'
 import express from 'express';
 import * as BodyParser from 'body-parser';
-import { Logger, logger } from './utils';
+import { Logger } from './utils';
 import router from './router/url';
 import config from './config';
-import morgan from 'morgan';
 import http from 'http';
 
 const app = express();

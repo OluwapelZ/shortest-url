@@ -1,10 +1,12 @@
 import express from 'express';
 import { TYPES } from '../constant';
-import { diContainer } from '../config/di';
+import { container } from '../config/di';
 import { UrlController } from '../controller';
+import { ValidateRequest } from '../middleware/validation/request.validate';
 const router = express.Router();
 
-const urlController = diContainer.get<UrlController>(TYPES.UrlController);
+const validateRequestMiddleware = container.get<ValidateRequest>(TYPES.ValidateRequest);
+const urlController = container.get<UrlController>(TYPES.UrlController);
 
 router.get('/health', (req, res) => {
     res.json({
@@ -13,7 +15,7 @@ router.get('/health', (req, res) => {
     });
 });
 
-router.post('/encode', urlController.encodeUrl);
-router.post('/decode', urlController.decodeUrl);
+router.post('/encode', validateRequestMiddleware.encodeValidation, urlController.encodeUrl);
+router.post('/decode', validateRequestMiddleware.decodeValidation, urlController.decodeUrl);
 
 export default router;

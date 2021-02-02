@@ -6,7 +6,8 @@
         "noImplicitAny": false,
         "removeComments": true,
         "esModuleInterop": true,
-        "target": "es6",
+        "target": "es5",
+        "lib": ["es6"],
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
@@ -15,6 +16,6 @@
     },
     "lib": ["es2015"],
     "exclude": [
-        "node_modules"
-    ]
+        "node_modules",
+    ],
 }
