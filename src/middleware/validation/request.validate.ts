@@ -13,15 +13,16 @@ export class ValidateRequest {
         @inject(TYPES.Logger) private readonly logger: Logger,
     ) {}
 
-    encodeValidation = async (req: any, res: any, next: any) => {
+    encodeValidation = async (req: Express.Request, res: Express.Response, next: any) => {
         try {
             const encodeSchema = yup.object({
-                url: yup.string().matches(/((https?):\/\/)?(www.)?[a-z0-9-]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#-]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
-                'Enter a valid url to encode'
-                ).required()
+                url: yup.string()
+                .test("is-url-valid", "URL is not valid", (value: any) => {
+                    return this.isValidUrl(value);})
+                .required()
             });
     
-            await encodeSchema.validate(req.body);
+            await encodeSchema.validate(req['body']);
             return next();
         } catch (error) {
             this.logger.error(`Error occured on validating url: ${error.message}`);
@@ -29,20 +30,33 @@ export class ValidateRequest {
         }
     }
 
-    decodeValidation = async (req: any, res: any, next: any) => {
+    decodeValidation = async (req: Express.Request, res: any, next: any) => {
         try {
             const encodeSchema = yup.object({
                 url: yup.string()
+                .test("is-url-valid", "URL is not valid", (value: any) => {
+                    return this.isValidUrl(value);})
                 .required()
             });
     
-            await encodeSchema.validate(req.body);
-            const shortenedUrl: string = req.body.url;
-            req.body.url = shortenedUrl.replace(config.shortedBaseUrl, '');
+            const body = req['body'];
+            await encodeSchema.validate(body);
+            const shortenedUrl: string = body.url;
+            req['body'].url = shortenedUrl.replace(config.shortedBaseUrl, '');
             return next();
         } catch (error) {
             this.logger.error(`Error occured on validating url: ${error.message}`);
-            this.responseMapper.failed({res, message: error.message});
+            return this.responseMapper.failed({res, message: error.message});
         }
     }
+
+    isValidUrl = (url: string) => {
+        const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+        return pattern.test(url);
+    };
 }

@@ -17,3 +17,10 @@ export const CacheMock = jest.fn().mockImplementation(() => {
     getJson: jest.fn(),
   }
 });
+
+export const ResponseMapperMock = jest.fn().mockImplementation(() => {
+  return {
+    success: jest.fn(),
+    failed: jest.fn(),
+  }
+})

@@ -1,0 +1,11 @@
+version: "3.2"
+services:
+  web:
+    image: url-shortner
+    build: .
+    container_name: url-shortner
+    ports:
+      - 3000
+    env_file: .env
+    volumes:
+      - ".:/src"

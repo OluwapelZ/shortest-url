@@ -6,8 +6,10 @@ Url Shortening service to:
 ## Implementation Summary
 ### Encode: Steps to encode url
 - Generate unique short id - [shortid](https://www.npmjs.com/package/shortid)
-- Generate slug id: Dynamic index substring length from string of numbers generated randomly
-- Save the encode data in [redis](https://redis.io/)
+- Generate slug id: Dynamic index substring length from string of numbers generated randomly. Two packages were used to reduce collision probability between slugCodes
+- Generate hash from long url and check if hash already exists, if not save it.
+- Save the encode data in [redis](https://redis.io/) with the longurl hash as key
+- Save the encode data in [redis](https://redis.io/) with the slugcode as key [Reason for persisting twice is to place a constraint on multiple request of already encoded url]
 - Return shortened url
 
 ### Decode: Steps to decode url
@@ -21,12 +23,15 @@ Url Shortening service to:
 - Install dependencies: `npm install`
 
 ### Start App
-#### Development Environment
+#### With Docker
+- [First Run] Build and run image: `docker-compose up --build`
+- Run existing image: `docker-compose up`
+#### Without Docker
+##### Development Environment
 `npm run start:dev`
 
-#### Production Environment
+##### Production Environment
 `npm run start`
-
 ## Run Test
 To run all tests on this service simply run:
 `npm test`

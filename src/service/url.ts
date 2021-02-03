@@ -6,6 +6,7 @@ import config from "../config";
 import { Cache } from "../utils/cache";
 import { BaseService } from "./base";
 import { InvalidUrlSlug } from "../error";
+import MD5 from 'crypto-js/md5';
 
 
 @injectable()
@@ -22,10 +23,24 @@ export class UrlService extends BaseService {
         const urlSlugPreffix = this.generateSlugId();
         const slugCode = `${urlSlugSuffix}.${urlSlugPreffix}`;
 
-        await this.cache.set(`${slugCode}`, JSON.stringify({
+        const hashLongUrl = MD5(url).toString();
+        const details = await this.cache.getJson(hashLongUrl);
+
+        if (details) {
+            return config.shortedBaseUrl + details.slugCode;
+        }
+
+        // For decode retrieval
+        await this.cache.set(slugCode, JSON.stringify({
             originalUrl: url,
             slugCode,
         }));
+        // For encode retrieval of same long url
+        await this.cache.set(hashLongUrl, JSON.stringify({
+            originalUrl: url,
+            slugCode,
+        }));
+
         return config.shortedBaseUrl + slugCode;
     }
 
