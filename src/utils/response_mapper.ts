@@ -15,6 +15,6 @@ export class ResponseMapper {
     
     failed(response: IExpressResponseMapper): IResponse {
         const { res, message } = response;
-        return res.status(StatusCodes.BAD_REQUEST).send({status: request_statuses.FAIL, message: message, data: null});
+        return res.status(response.status).send({status: request_statuses.FAIL, message: message, data: null});
     };
 }

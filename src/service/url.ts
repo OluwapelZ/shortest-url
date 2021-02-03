@@ -1,20 +1,43 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../constant";
 import { Logger } from "../utils";
+import shortid from 'shortid';
+import config from "../config";
+import { Cache } from "../utils/cache";
+import { BaseService } from "./base";
+import { InvalidUrlSlug } from "../error";
+
 
 @injectable()
-export class UrlService {
+export class UrlService extends BaseService {
     constructor(
         @inject(TYPES.Logger) private readonly logger: Logger,
-    ) {}
+        @inject(TYPES.Cache) private readonly cache: Cache,
+    ) { super(); }
 
-    public encode(url: string): string {
+    public async encode(url: string): Promise<string> {
         this.logger.info(`Successfully encoded url`);
-        return;
+
+        const urlSlugSuffix = shortid.generate();
+        const urlSlugPreffix = this.generateSlugId();
+        const slugCode = `${urlSlugSuffix}.${urlSlugPreffix}`;
+
+        await this.cache.set(`${slugCode}`, JSON.stringify({
+            originalUrl: url,
+            slugCode,
+        }));
+        return config.shortedBaseUrl + slugCode;
     }
 
-    public decode(url: string): string {
-        this.logger.info(`Successfully decoded url`)
-        return ;
+    public async decode(slugCode: string): Promise<any> {
+        this.logger.info(`Successfully decoded url`);
+        
+        const originalUrl = await this.cache.getJson(slugCode);
+        if (!originalUrl) {
+            this.logger.error(`Shortened Url "${config.shortedBaseUrl}/${slugCode}" is not mapped to any url`);
+            throw new InvalidUrlSlug(`Shortened Url "${config.shortedBaseUrl}/${slugCode}" is not mapped to any url`);
+        }
+
+        return originalUrl;
     }
 }

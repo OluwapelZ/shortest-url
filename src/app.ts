@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 import express from 'express';
 import * as BodyParser from 'body-parser';
 import { Logger } from './utils';

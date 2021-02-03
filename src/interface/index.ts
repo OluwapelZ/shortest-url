@@ -1,7 +1,14 @@
 export interface IExpressResponseMapper {
     res: any,
+    status?: number,
     message: string,
 };
+
+export interface urlData {
+    slug: string;
+    longUrl: string;
+    shortUrl: string;
+}
 
 export interface ISuccess extends IExpressResponseMapper {
     data: any;

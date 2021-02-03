@@ -4,4 +4,5 @@ export const TYPES = {
     UrlService: Symbol.for('UrlService'),
     UrlController: Symbol.for('UrlController'),
     ValidateRequest: Symbol.for('ValidateRequest'),
+    Cache: Symbol.for('Cache'),
 };

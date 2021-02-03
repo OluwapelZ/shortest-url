@@ -1,6 +1,7 @@
+import { StatusCodes } from "http-status-codes";
 import { inject, injectable } from "inversify";
+import { InvalidUrlSlug } from "../error";
 import { TYPES } from "../constant";
-import { IResponse } from "../interface";
 import { UrlService } from "../service";
 import { Logger, ResponseMapper,  } from "../utils";
 
@@ -12,26 +13,34 @@ class UrlController {
         @inject(TYPES.UrlService) private readonly urlService: UrlService,
     ) {}
 
-    public encodeUrl = (req, res) => {
+    public encodeUrl = async (req: any, res: any) => {
         this.logger.info(`Encoding: shortening url`);
 
-        const shortenedUrl = this.urlService.encode(req.body.url);
+        const shortenedUrl = await this.urlService.encode(req.body.url);
         return this.responseMapper.success({
             res,
             message: 'Successfully shortened url',
-            data: { url: shortenedUrl }
+            data: { shortenedUrl }
         });
     }
 
-    public decodeUrl = (req, res) => {
-        this.logger.info(`Decoding endoded url`);
+    public decodeUrl = async (req: any, res: any) => {
+        try {
+            this.logger.info(`Decoding endoded url`);
+            const originalUrl = await this.urlService.decode(req.body.url);
 
-        const shortenedUrl = this.urlService.decode(req.body.url);
-        return this.responseMapper.success({
-            res,
-            message: 'Successfully decoded shortened url',
-            data: { url: shortenedUrl }
-        });
+            return this.responseMapper.success({
+                res,
+                message: 'Successfully decoded shortened url',
+                data: { url: originalUrl }
+            });
+        } catch (error) {
+            if (error instanceof InvalidUrlSlug) {
+                return this.responseMapper.failed({res, status: StatusCodes.BAD_REQUEST, message: error.message})
+            }
+
+            return this.responseMapper.failed({res, status: StatusCodes.INTERNAL_SERVER_ERROR, message: 'Unknown error'})
+        }
     }
 }
 

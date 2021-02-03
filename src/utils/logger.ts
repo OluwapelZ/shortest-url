@@ -1,10 +1,5 @@
+import 'reflect-metadata'
 import { injectable } from 'inversify';
-
-/**
- * Logger Class
- */
-/* tslint:disable:no-console */
-import 'reflect-metadata';
 import * as winston from 'winston';
 
 export type Parameter = any;
