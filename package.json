@@ -52,6 +52,7 @@
     "reflect-metadata": "^0.1.13",
     "shortid": "^2.2.16",
     "ts-node": "^9.1.1",
+    "valid-url": "^1.0.9",
     "winston": "^3.3.3",
     "yup": "^0.32.8"
   }

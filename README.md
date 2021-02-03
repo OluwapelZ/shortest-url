@@ -3,6 +3,18 @@ Url Shortening service to:
 - encode(shorten) urls and give a short version of it
 - decode urls and give the orginally encoded url with the slug provided
 
+## Implementation Summary
+### Encode: Steps to encode url
+- Generate unique short id - [shortid](https://www.npmjs.com/package/shortid)
+- Generate slug id: Dynamic index substring length from string of numbers generated randomly
+- Save the encode data in [redis](https://redis.io/)
+- Return shortened url
+
+### Decode: Steps to decode url
+- Fetch for data from node redis with the slug code (key)
+- Throw an error if the no url mapped to the slug code
+- Return the long url.
+
 ## Setup
 ### Environmental setup
 - Make a duplicate of the .env-sample file: `cp .env-sample .env`
