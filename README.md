@@ -12,6 +12,7 @@ Url Shortening service to:
 
 ### Things to add if done again
 - Expire slugs
+- Editor config (Prep for contribution)
 
 ### Encode: Steps to encode url
 - Generate unique short id - [shortid](https://www.npmjs.com/package/shortid)
